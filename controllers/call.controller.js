@@ -41,7 +41,7 @@ exports.start = async (req, res) => {
 
     const response = await axios.post(url, payload, {
       headers: {
-        Authorization: `Bearer ${cfg.accountToken}`,
+        "x-api-key": process.env.SMARTFLO_CLICK_TO_CALL_API_KEY,
         "Content-Type": "application/json",
       },
       timeout: 30000,
