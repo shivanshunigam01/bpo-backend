@@ -8,53 +8,40 @@ function nowIso() {
 
 exports.start = async (req, res) => {
   try {
-    const { leadId, phone, name, reference_id } = req.body || {};
+    const { leadId, phone, reference_id } = req.body || {};
     const cfg = smartfloConfig();
 
     const ref = reference_id || leadId || `lead-${Date.now()}`;
     const to = String(phone || "").replace(/\D/g, "");
     if (!to) return res.status(400).json({ message: "phone required" });
 
-    if (cfg.mode === "mock") {
-      const mockCallId = "mock_" + Math.random().toString(16).slice(2);
-      if (leadId)
-        await Lead.findByIdAndUpdate(leadId, {
-          $inc: { attempts: 1 },
-          lastCallAt: new Date(),
-        });
-      return res.json({
-        mode: "mock",
-        callId: mockCallId,
-        status: "Dialing",
-        reference_id: ref,
-        at: nowIso(),
-      });
-    }
-
+    // LIVE ONLY
     const url = cfg.baseUrl.replace(/\/$/, "") + cfg.paths.clickToCall;
+
     const payload = {
-      api_key: cfg.clickToCallApiKey,
       customer_number: to,
       reference_id: ref,
-      name,
     };
 
     const response = await axios.post(url, payload, {
       headers: {
-        "x-api-key": process.env.SMARTFLO_CLICK_TO_CALL_API_KEY,
+        "x-api-key": cfg.clickToCallApiKey,
         "Content-Type": "application/json",
       },
       timeout: 30000,
     });
 
-    if (leadId)
+    if (leadId) {
       await Lead.findByIdAndUpdate(leadId, {
         $inc: { attempts: 1 },
         lastCallAt: new Date(),
       });
-    res.json(response.data);
+    }
+
+    return res.json(response.data);
   } catch (err) {
-    res
+    console.error("SMARTFLO ERROR:", err.response?.data || err.message);
+    return res
       .status(err.response?.status || 500)
       .json(err.response?.data || { message: err.message });
   }
