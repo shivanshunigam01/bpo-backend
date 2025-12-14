@@ -1,0 +1,25 @@
+{
+  "name": "zentroverse-telecalling-backend-plain",
+  "version": "1.0.0",
+  "description": "Plain Express + MongoDB backend for Zentroverse telecalling app (controller/model/routes).",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.2",
+    "multer": "^2.0.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
